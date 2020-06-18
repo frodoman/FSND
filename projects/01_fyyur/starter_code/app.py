@@ -256,7 +256,7 @@ def create_venue_submission():
     db.session.close()
 
   if error == False:
-    flash('Venue ' + form['facebook_link'] + ' was successfully listed!')
+    flash('Venue ' + form['name'] + ' was successfully listed!')
   
   return render_template('pages/home.html')
 
