@@ -236,33 +236,15 @@ def create_venue_submission():
   form = request.form
 
   try:
-    '''
     venu = Venue(name=form['name'], 
                   city=form['city'], 
                   state=form['state'],
                   address=form['address'],
-                  phone=form['phone'],
-                  genres=form['genres'],
-                  fasebook_link=form['fasebook_link'])
-    
-    name = db.Column(db.String)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    address = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120))
+                  phone=form['phone'])
     '''
-
-    venu = Venue(name=form['name'])
-    venu.city = form['city']
-    venu.state = form['state']
     #venu.genres = form['genres']
-    venu.address = form['address']
-    venu.phone = form['phone']
     #venu.facebook_link = form['facebook_link']
-
+    '''
     db.session.add(venu)
     db.session.commit()
   except:
@@ -274,12 +256,11 @@ def create_venue_submission():
     db.session.close()
 
   if error == False:
-    flash('Venue ' + request.form['city'] + ' was successfully listed!')
+    flash('Venue ' + form['facebook_link'] + ' was successfully listed!')
   
   return render_template('pages/home.html')
 
   
-
   # on successful db insert, flash success
   
   # TODO: on unsuccessful db insert, flash an error instead.
