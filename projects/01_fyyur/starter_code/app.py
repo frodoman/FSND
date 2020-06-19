@@ -455,14 +455,14 @@ def create_artist_submission():
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
   error = False
-  form = request.form
+  form = ArtistForm(request.form)
+  #flash('Genres ' + form.genres.data[0][0].join(';') )
 
   try:
-    artist = Artist(name=form['name'], 
-                  city=form['city'], 
-                  state=form['state'],
-                  phone=form['phone'])
-
+    artist = Artist(name=form.name.data, 
+                    city=form.city.data, 
+                    state=form.state.data,
+                    phone=form.phone.data)
     db.session.add(artist)
     db.session.commit()
   except:
@@ -476,21 +476,9 @@ def create_artist_submission():
 
   if error == False:
     # on successful db insert, flash success
-    flash('Artist ' + form['name'] + ' was successfully listed!')
+    flash('Artist ' + form.name.data + ' was successfully listed!')
   
   return render_template('pages/home.html')
-
-  '''    
-  id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.String)
-  city = db.Column(db.String(120))
-  state = db.Column(db.String(120))
-  phone = db.Column(db.String(120))
-  genres = db.Column(db.String(120))
-  image_link = db.Column(db.String(500))
-  facebook_link = db.Column(db.String(120))
-  '''
-
 
 #  Shows
 #  ----------------------------------------------------------------
