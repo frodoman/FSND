@@ -14,6 +14,7 @@ from flask_wtf import Form
 from forms import *
 from flask_migrate import Migrate
 import sys
+from helper import *
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -456,7 +457,7 @@ def create_artist_submission():
   # TODO: modify data to be the data object returned from db insertion
   error = False
   form = ArtistForm(request.form)
-  #flash('Genres ' + form.genres.data[0][0].join(';') )
+  flash('Genres ' + listToString(form.genres.data))
 
   try:
     artist = Artist(name=form.name.data, 
@@ -474,10 +475,12 @@ def create_artist_submission():
   finally:
     db.session.close()
 
-  if error == False:
+  if error == False and form.is_submitted():
     # on successful db insert, flash success
     flash('Artist ' + form.name.data + ' was successfully listed!')
-  
+  else:
+    flash('Artist ' + form.name.data + 'failed to add!')
+
   return render_template('pages/home.html')
 
 #  Shows
