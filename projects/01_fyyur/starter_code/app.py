@@ -8,6 +8,7 @@ import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form
@@ -149,7 +150,34 @@ def venues():
       "num_upcoming_shows": 0,
     }]
   }]
-  return render_template('pages/venues.html', areas=data);
+
+  resultData = []
+
+  # find all the states from Venue table
+  states = Venue.query.with_entities(Venue.state, func.count(Venue.city)).group_by(Venue.state).all()
+
+  # Loop through each state
+  for oneState in states:
+
+    # all the cities for one state
+    stateCitys = Venue.query.filter(Venue.state==oneState[0]).all()
+    
+    oneData = dict()
+    oneData['state'] = oneState[0]
+    #oneData['city'] = stateCitys[0]
+    subVenues = []
+    for oneCity in stateCitys:
+      aVenue = dict()
+      aVenue['id'] = oneCity.id
+      aVenue['name'] = oneCity.name
+      aVenue['city'] = oneCity.city
+      aVenue['num_upcoming_shows'] = 0
+      subVenues.append(aVenue)
+    
+    oneData['venues'] = subVenues
+    resultData.append(oneData)
+
+  return render_template('pages/venues.html', areas=resultData);
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
