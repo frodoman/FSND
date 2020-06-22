@@ -350,7 +350,10 @@ def artists():
     "id": 6,
     "name": "The Wild Sax Band",
   }]
-  return render_template('pages/artists.html', artists=data)
+
+  artists = Artist.query.with_entities(Artist.id, Artist.name).order_by(Artist.name).all()
+
+  return render_template('pages/artists.html', artists=artists)
 
 @app.route('/artists/search', methods=['POST'])
 def search_artists():
@@ -596,9 +599,41 @@ def create_shows():
 def create_show_submission():
   # called to create new shows in the db, upon submitting new show listing form
   # TODO: insert form data as a new Show record in the db, instead
+  form = ShowForm(request.form)
+  flash(form.start_time.data)
+  error = False
+
+  artistId = form.venue_id.data
+  venueId = form.venue_id.data
+
+  try:
+    show = Show()
+    show.artist_id = artistId
+    show.venu_id = venueId
+    show.time = form.start_time.data
+
+    #link to artist
+    artist = Artist.query.get(artistId)
+    artist.shows.append(show)
+    
+    #link to venu
+    venue = Venue.query.get(venueId)
+    venue.shows.append(show)
+    
+    db.session.add(show)
+    db.session.commit()
+  except:
+    error = True
+    db.session.rollback()
+    flash(sys.exc_info())
+  finally:
+    db.session.close()
 
   # on successful db insert, flash success
-  flash('Show was successfully listed!')
+  if error == True:
+    flash('An error occurred. Show could not be listed.')
+  else:
+    flash('Show was successfully listed!')
   # TODO: on unsuccessful db insert, flash an error instead.
   # e.g., flash('An error occurred. Show could not be listed.')
   # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
