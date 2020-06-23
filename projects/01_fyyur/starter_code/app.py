@@ -164,7 +164,7 @@ def venues():
     
     oneData = dict()
     oneData['state'] = oneState[0]
-    #oneData['city'] = stateCitys[0]
+
     subVenues = []
     for oneCity in stateCitys:
       aVenue = dict()
