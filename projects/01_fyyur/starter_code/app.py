@@ -62,6 +62,8 @@ class Artist(db.Model):
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    image_link = db.Column(db.String(120))
+    website = db.Column(db.String(120))
 
     shows = db.relationship('Show', secondary=show_artist, 
             backref=db.backref('artists', lazy=True))
@@ -89,7 +91,9 @@ class Venue(db.Model):
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
-
+    seeking_talent = db.Column(db.Boolean)
+    image_link = db.Column(db.String(120))
+    website = db.Column(db.String(120))
     shows = db.relationship('Show', secondary=show_venue, 
             backref=db.backref('venues', lazy=True))
       
@@ -184,15 +188,28 @@ def search_venues():
   # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
-  response={
-    "count": 1,
-    "data": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
+  keyWords = request.form.get('search_term', '')
+  likeWords = "%" + keyWords + "%"
+
+  result = Venue.query.filter(Venue.name.ilike(likeWords) | 
+                              Venue.city.ilike(likeWords) | 
+                              Venue.state.ilike(likeWords)).order_by(Venue.name).all()
+
+  viewItems = []
+  if len(result) > 0:
+    for oneResult in result:
+      oneDic = dict()
+      oneDic['id'] = oneResult.id
+      oneDic['name'] = oneResult.name
+      oneDic['num_upcoming_shows'] = 0
+      viewItems.append(oneDic)
+
+  response = {
+    "count": len(result),
+    "data": viewItems
   }
-  return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
+
+  return render_template('pages/search_venues.html', results=response, search_term=keyWords)
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
