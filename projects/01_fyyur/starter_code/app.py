@@ -275,7 +275,23 @@ def show_venue(venue_id):
     "past_shows_count": 1,
     "upcoming_shows_count": 1,
   }
-  data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
+  
+  venue = Venue.query.get(venue_id)
+  if venue is None: 
+    flash('Venue (with id: ' + str(venue_id) + ') not found')
+    return redirect(url_for('venues'))
+
+  data = dict()
+  data['id'] = venue.id
+  data['name'] = venue.name
+  data['genres'] = stringToArray(venue.genres)
+  data['address'] = venue.address
+  data['city'] = venue.city
+  data['state'] = venue.state
+  data['phone'] = venue.phone
+  data['facebook_link'] = venue.facebook_link
+
+  #data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
   return render_template('pages/show_venue.html', venue=data)
 
 #  Create Venue
@@ -299,16 +315,12 @@ def create_venue_submission():
                   state=form['state'],
                   address=form['address'],
                   phone=form['phone'])
-    '''
-    #venu.genres = form['genres']
-    #venu.facebook_link = form['facebook_link']
-    '''
+ 
     db.session.add(venu)
     db.session.commit()
   except:
     error = True
     db.session.rollback()
-    # errorMsg = sys.exc_info()
     flash( sys.exc_info())
   finally:
     db.session.close()
@@ -333,7 +345,29 @@ def delete_venue(venue_id):
 
   # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
   # clicking that button delete it from the db then redirect the user to the homepage
-  return None
+  error = False
+  venue_name = ""
+  try:
+      venue = Venue.query.get(venue_id)
+      venue_name = venue.name
+
+      for show in venue.shows:
+          db.session.delete(show)
+      
+      db.session.delete(venue)
+      db.session.commit()
+  except():
+      db.session.rollback()
+      error = True
+  finally:
+      db.session.close()
+
+  if error:
+    flash(sys.exc_info())
+  else:
+    flash('Venue ' + venue_name + 'deleted!')
+  
+  return render_template('pages/home.html')
 
 #  Artists
 #  ----------------------------------------------------------------

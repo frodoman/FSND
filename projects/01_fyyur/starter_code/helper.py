@@ -7,3 +7,12 @@ def listToString(stringlist):
         result += (oneString + ",")
 
     return result
+
+def stringToArray(stringValue):
+    if stringValue is None or len(stringValue) == 0:
+        return [""]
+
+    if "," in stringValue:
+        return stringValue.split(",")
+    else:
+        return [stringValue]
