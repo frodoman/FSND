@@ -369,8 +369,20 @@ def delete_venue(venue_id):
       venue_name = venue.name
 
       for show in venue.shows:
-          db.session.delete(show)
+        venue.shows.remove(show)
+
+      # Show table
+      shows = Show.query.filter(venue_id==venue_id)
       
+      # clean Artist table
+      for oneShow in shows:
+        artist = Artist.query.get(oneShow.artist_id)
+        artist.shows.delete().where()
+
+      # clean Show table
+      shows.delete()
+      
+      # clean Venue table
       db.session.delete(venue)
       db.session.commit()
   except():
