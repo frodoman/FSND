@@ -373,11 +373,14 @@ def delete_venue(venue_id):
 
       # Show table
       shows = Show.query.filter(venue_id==venue_id)
-      
+      showIds = [oneShow.id for oneShow in shows]
+
       # clean Artist table
       for oneShow in shows:
         artist = Artist.query.get(oneShow.artist_id)
-        artist.shows.delete().where()
+        for artistShow in artist.shows:
+          if artistShow.id in showIds:
+            artist.shows.remove(artistShow)
 
       # clean Show table
       shows.delete()
