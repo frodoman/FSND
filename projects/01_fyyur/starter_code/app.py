@@ -57,23 +57,8 @@ import route_venues
 def index():
   return render_template('pages/home.html')
 
-
-#  Create Venue
-#  ----------------------------------------------------------------
-
-  
-  # on successful db insert, flash success
-  
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., 
-  # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
-
-#  Artists
-#  ----------------------------------------------------------------
-
 #  Shows
 #  ----------------------------------------------------------------
-
 @app.route('/shows')
 def shows():
   # displays list of shows at /shows
