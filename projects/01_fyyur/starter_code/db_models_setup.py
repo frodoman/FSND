@@ -1,10 +1,5 @@
 from app import app, db, migrate, moment
-from flask import Flask, render_template, request, Response, flash, redirect, url_for
-from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
-from forms import *
-
 
 class Show(db.Model):
   __tablename__ = 'Show'
