@@ -4,6 +4,7 @@ from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from forms import *
+from db_models_setup import Venue
 
 #  /venues
 #  ----------------------------------------------------------------

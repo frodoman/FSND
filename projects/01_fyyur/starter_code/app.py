@@ -32,81 +32,11 @@ migrate = Migrate(app, db)
 #----------------------------------------------------------------------------#
 # Models.
 #----------------------------------------------------------------------------#
-class Show(db.Model):
-  __tablename__ = 'Show'
+import db_models_setup
 
-  id = db.Column(db.Integer, primary_key=True)
-  venu_id = db.Column(db.Integer, db.ForeignKey('Venue.id'))
-  artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'))
-
-  title = db.Column(db.String)
-  description = db.Column(db.String)
-  time = db.Column(db.DateTime)
-
-  def __repr__(self):
-    return f'<Venue {self.title} {self.time}>'
-
-show_artist = db.Table('show_artist', 
-    db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id'), primary_key=True),
-    db.Column('show_id', db.Integer, db.ForeignKey('Show.id'), primary_key=True)
-)
-
-class Artist(db.Model):
-    __tablename__ = 'Artist'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120))
-    image_link = db.Column(db.String(120))
-    website = db.Column(db.String(120))
-
-    shows = db.relationship('Show', secondary=show_artist, 
-            backref=db.backref('artists', lazy=True))
-
-    def __repr__(self):
-      return f'<Venue {self.id} {self.name} {self.city}>'
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
-
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
-
-show_venue = db.Table('show_venue',
-    db.Column('venu_id', db.Integer, db.ForeignKey('Venue.id'), primary_key=True),
-    db.Column('show_id', db.Integer, db.ForeignKey('Show.id'), primary_key=True)
-)
-
-class Venue(db.Model):
-    __tablename__ = 'Venue'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    address = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120))
-    seeking_talent = db.Column(db.Boolean)
-    image_link = db.Column(db.String(120))
-    website = db.Column(db.String(120))
-    shows = db.relationship('Show', secondary=show_venue, 
-            backref=db.backref('venues', lazy=True))
-      
-    def __repr__(self):
-      return f'<Venue {self.id} {self.name} {self.city}>'
-
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
-
-#db.create_all()
 #----------------------------------------------------------------------------#
 # Filters.
 #----------------------------------------------------------------------------#
-
 def format_datetime(value, format='medium'):
   date = dateutil.parser.parse(value)
   if format == 'full':
@@ -222,21 +152,6 @@ def delete_venue(venue_id):
 #  Artists
 #  ----------------------------------------------------------------
 
-@app.route('/artists/search', methods=['POST'])
-def search_artists():
-  # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
-  # seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
-  # search for "band" should return "The Wild Sax Band".
-  response={
-    "count": 1,
-    "data": [{
-      "id": 4,
-      "name": "Guns N Petals",
-      "num_upcoming_shows": 0,
-    }]
-  }
-  return render_template('pages/search_artists.html', results=response, search_term=request.form.get('search_term', ''))
-
 @app.route('/venues/<int:venue_id>/edit', methods=['GET'])
 def edit_venue(venue_id):
   form = VenueForm()
@@ -262,48 +177,6 @@ def edit_venue_submission(venue_id):
   # TODO: take values from the form submitted, and update existing
   # venue record with ID <venue_id> using the new attributes
   return redirect(url_for('show_venue', venue_id=venue_id))
-
-#  Create Artist
-#  ----------------------------------------------------------------
-'''
-@app.route('/artists/create', methods=['GET'])
-def create_artist_form():
-  form = ArtistForm()
-  return render_template('forms/new_artist.html', form=form)
-'''
-
-@app.route('/artists/create', methods=['POST'])
-def create_artist_submission():
-  # called upon submitting the new artist listing form
-  # TODO: insert form data as a new Venue record in the db, instead
-  # TODO: modify data to be the data object returned from db insertion
-  error = False
-  form = ArtistForm(request.form)
-  flash('Genres ' + listToString(form.genres.data))
-
-  try:
-    artist = Artist(name=form.name.data, 
-                    city=form.city.data, 
-                    state=form.state.data,
-                    phone=form.phone.data)
-    db.session.add(artist)
-    db.session.commit()
-  except:
-    error = True
-    db.session.rollback()
-    # TODO: on unsuccessful db insert, flash an error instead.
-    # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
-    flash(sys.exc_info())
-  finally:
-    db.session.close()
-
-  if error == False and form.is_submitted():
-    # on successful db insert, flash success
-    flash('Artist ' + form.name.data + ' was successfully listed!')
-  else:
-    flash('Artist ' + form.name.data + 'failed to add!')
-
-  return render_template('pages/home.html')
 
 #  Shows
 #  ----------------------------------------------------------------

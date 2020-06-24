@@ -4,6 +4,7 @@ from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from forms import *
+from db_models_setup import Artist
 
 @app.route('/artists/create', methods=['GET'])
 def create_artist_form():
@@ -133,3 +134,53 @@ def edit_artist_submission(artist_id):
   # artist record with ID <artist_id> using the new attributes
 
   return redirect(url_for('show_artist', artist_id=artist_id))
+
+#  /artists/create
+#  ----------------------------------------------------------------
+@app.route('/artists/create', methods=['POST'])
+def create_artist_submission():
+  # called upon submitting the new artist listing form
+  # TODO: insert form data as a new Venue record in the db, instead
+  # TODO: modify data to be the data object returned from db insertion
+  error = False
+  form = ArtistForm(request.form)
+  flash('Genres ' + listToString(form.genres.data))
+
+  try:
+    artist = Artist(name=form.name.data, 
+                    city=form.city.data, 
+                    state=form.state.data,
+                    phone=form.phone.data)
+    db.session.add(artist)
+    db.session.commit()
+  except:
+    error = True
+    db.session.rollback()
+    # TODO: on unsuccessful db insert, flash an error instead.
+    # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
+    flash(sys.exc_info())
+  finally:
+    db.session.close()
+
+  if error == False and form.is_submitted():
+    # on successful db insert, flash success
+    flash('Artist ' + form.name.data + ' was successfully listed!')
+  else:
+    flash('Artist ' + form.name.data + ' failed to add!')
+
+  return render_template('pages/home.html')
+
+@app.route('/artists/search', methods=['POST'])
+def search_artists():
+  # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
+  # seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
+  # search for "band" should return "The Wild Sax Band".
+  response={
+    "count": 1,
+    "data": [{
+      "id": 4,
+      "name": "Guns N Petals",
+      "num_upcoming_shows": 0,
+    }]
+  }
+  return render_template('pages/search_artists.html', results=response, search_term=request.form.get('search_term', ''))
