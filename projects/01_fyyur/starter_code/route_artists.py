@@ -4,7 +4,7 @@ from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from forms import *
-from db_models_setup import Artist
+from db_models_setup import Artist, Show, Venue
 
 @app.route('/artists/create', methods=['GET'])
 def create_artist_form():
@@ -215,3 +215,45 @@ def search_artists():
   }
 
   return render_template('pages/search_artists.html', results=response, search_term=keyWords)
+
+@app.route('/artists/<int:artist_id>/delete', methods=['POST'])
+def delete_artist(artist_id):
+  error = False
+  artist_name = ""
+
+  try:
+      artist = Artist.query.get(artist_id)
+      artist_name = artist.name
+
+      for show in artist.shows:
+        artist.shows.remove(show)
+
+      # Show table
+      shows = Show.query.filter(artist_id==artist_id)
+      showIds = [oneShow.id for oneShow in shows]
+
+      # clean Venue table
+      for oneShow in shows:
+        venue = Venue.query.get(oneShow.venue_id)
+        for venueShow in venue.shows:
+          if venueShow.id in showIds:
+            venue.shows.remove(venueShow)
+
+      # clean Show table
+      shows.delete()
+      
+      # clean Venue table
+      db.session.delete(artist)
+      db.session.commit()
+  except():
+      db.session.rollback()
+      error = True
+  finally:
+      db.session.close()
+
+  if error:
+    flash(sys.exc_info())
+  else:
+    flash('Artist ' + artist_name + ' deleted!')
+  
+  return render_template('pages/home.html')

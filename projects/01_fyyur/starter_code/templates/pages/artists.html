@@ -11,6 +11,10 @@
 			</div>
 		</a>
 	</li>
+	<form action="/artists/{{ artist.id }}/delete" method=post >
+		<input type=hidden value="{{ artist.id }}" name="artist_id" />
+		<input type=submit value="Delete"/>
+	</form>
 	{% endfor %}
 </ul>
 {% endblock %}
