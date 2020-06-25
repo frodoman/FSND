@@ -65,7 +65,7 @@ def create_show_submission():
   flash(form.start_time.data)
   error = False
 
-  artistId = form.venue_id.data
+  artistId = form.artist_id.data
   venueId = form.venue_id.data
 
   try:
