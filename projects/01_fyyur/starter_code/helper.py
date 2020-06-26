@@ -1,4 +1,4 @@
-def listToString(stringlist): 
+def arrayToString(stringlist): 
     if len(stringlist) == 0:
         return ""
 

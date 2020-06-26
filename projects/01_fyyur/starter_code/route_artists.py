@@ -128,21 +128,21 @@ def show_artist(artist_id):
 def edit_artist(artist_id):
   form = ArtistForm()
 
-  artist={
-    "id": 4,
-    "name": "Guns N Petals",
-    "genres": ["Rock n Roll"],
-    "city": "San Francisco",
-    "state": "CA",
-    "phone": "326-123-5000",
-    "website": "https://www.gunsnpetalsband.com",
-    "facebook_link": "https://www.facebook.com/GunsNPetals",
+  data = Artist.query.get(artist_id)
+
+  artist = {
+    "id": data.id,
+    "name": data.name,
+    "genres": stringToArray(data.genres),
+    "city": data.city,
+    "state": data.state,
+    "phone": data.phone,
+    "website": data.website,
+    "facebook_link": data.facebook_link,
     "seeking_venue": True,
     "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
     "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
   }
-
-  artist = Artist.query.gt(artist_id)
 
   # TODO: populate form with fields from artist with ID <artist_id>
   return render_template('forms/edit_artist.html', form=form, artist=artist)
@@ -151,6 +151,31 @@ def edit_artist(artist_id):
 def edit_artist_submission(artist_id):
   # TODO: take values from the form submitted, and update existing
   # artist record with ID <artist_id> using the new attributes
+
+  form = ArtistForm(request.form)
+  error = False
+
+  try:
+    artist = Artist.query.get(artist_id)
+    artist.name = form.name.data
+    artist.phone = form.phone.data
+    artist.city = form.city.data
+    artist.state = form.state.data
+    artist.genres = arrayToString(form.genres.data)
+    artist.image_link = form.image_link.data
+    artist.facebook_link = form.facebook_link.data
+    db.session.commit()
+  except:
+    error = True
+    db.session.rollback()
+    # TODO: on unsuccessful db insert, flash an error instead.
+    # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
+    flash(sys.exc_info())
+  finally:
+    db.session.close()
+
+  if error == True:
+    flash('Failed to modify artist ' + form.name +'!')
 
   return redirect(url_for('show_artist', artist_id=artist_id))
 
@@ -163,7 +188,7 @@ def create_artist_submission():
   # TODO: modify data to be the data object returned from db insertion
   error = False
   form = ArtistForm(request.form)
-  flash('Genres ' + listToString(form.genres.data))
+  flash('Genres ' + arrayToString(form.genres.data))
 
   try:
     artist = Artist(name=form.name.data, 
