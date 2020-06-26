@@ -127,6 +127,7 @@ def show_artist(artist_id):
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
   form = ArtistForm()
+
   artist={
     "id": 4,
     "name": "Guns N Petals",
@@ -140,6 +141,9 @@ def edit_artist(artist_id):
     "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
     "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
   }
+
+  artist = Artist.query.gt(artist_id)
+
   # TODO: populate form with fields from artist with ID <artist_id>
   return render_template('forms/edit_artist.html', form=form, artist=artist)
 
@@ -229,7 +233,7 @@ def delete_artist(artist_id):
         artist.shows.remove(show)
 
       # Show table
-      shows = Show.query.filter(artist_id==artist_id)
+      shows = Show.query.filter(Show.artist_id==artist_id)
       showIds = [oneShow.id for oneShow in shows]
 
       # clean Venue table
@@ -238,11 +242,11 @@ def delete_artist(artist_id):
         for venueShow in venue.shows:
           if venueShow.id in showIds:
             venue.shows.remove(venueShow)
-
+      
       # clean Show table
       shows.delete()
       
-      # clean Venue table
+      # clean Artist table
       db.session.delete(artist)
       db.session.commit()
   except():

@@ -250,7 +250,7 @@ def delete_venue(venue_id):
         venue.shows.remove(show)
 
       # Show table
-      shows = Show.query.filter(venue_id==venue_id)
+      shows = Show.query.filter(Show.venue_id==venue_id)
       showIds = [oneShow.id for oneShow in shows]
 
       # clean Artist table

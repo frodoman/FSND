@@ -5,7 +5,7 @@ class Show(db.Model):
   __tablename__ = 'Show'
 
   id = db.Column(db.Integer, primary_key=True)
-  venu_id = db.Column(db.Integer, db.ForeignKey('Venue.id'))
+  venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'))
   artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'))
 
   title = db.Column(db.String)
@@ -31,7 +31,6 @@ class Artist(db.Model):
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
-    image_link = db.Column(db.String(120))
     website = db.Column(db.String(120))
 
     shows = db.relationship('Show', secondary=show_artist, 
@@ -61,7 +60,6 @@ class Venue(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean)
-    image_link = db.Column(db.String(120))
     website = db.Column(db.String(120))
     shows = db.relationship('Show', secondary=show_venue, 
             backref=db.backref('venues', lazy=True))
