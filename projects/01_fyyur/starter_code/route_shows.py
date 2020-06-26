@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from forms import *
 from db_models_setup import *
+import helper
 
 #  Shows
 #  ----------------------------------------------------------------
@@ -49,7 +50,23 @@ def shows():
     "artist_image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
     "start_time": "2035-04-15T20:00:00.000Z"
   }]
-  return render_template('pages/shows.html', shows=data)
+
+  presentShows = []
+  shows = Show.query.all()
+  
+
+  for oneShow in shows:
+    data = {
+      "venue_id": oneShow.venue_id,
+      "venue_name": oneShow.venues[0].name,
+      "artist_id": oneShow.artist_id,
+      "artist_name": oneShow.artists[0].name,
+      "artist_image_link": oneShow.artists[0].image_link,
+      "start_time": dateTimeToString(oneShow.time)
+    }
+    presentShows.append(data)
+
+  return render_template('pages/shows.html', shows=presentShows)
 
 @app.route('/shows/create')
 def create_shows():
@@ -71,7 +88,7 @@ def create_show_submission():
   try:
     show = Show()
     show.artist_id = artistId
-    show.venu_id = venueId
+    show.venue_id = venueId
     show.time = form.start_time.data
 
     #link to artist
