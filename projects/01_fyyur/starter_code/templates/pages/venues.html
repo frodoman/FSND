@@ -4,57 +4,38 @@
 {% for area in areas %}
 
 <h3>{{ area.state }}</h3>
-	<ul class="items">
+<ul class="items">
+	<table>
 		{% for venue in area.venues %}
-		<li>
-			<a href="/venues/{{ venue.id }}">
-				<i class="fas fa-music"></i>
-				<div class="item">
-					<h5><br>Venue ID: {{ venue.id }} <br>City: {{ venue.city }} <br>Venue: {{ venue.name }} </h5>
-				</div>
-			</a>
-		</li>
-		<form action="/venues/{{ venue.id }}/delete" method=post >
-			<input type=hidden value="{{ venue.id }}" name="venue_id" />
-			<input type=submit value="Delete"/>
-		</form>
+		<tr>
+			<td>
+				<li>
+					<a href="/venues/{{ venue.id }}">
+						<i class="fas fa-music"></i>
+						<div class="item">
+							<h5><br>Venue ID: {{ venue.id }} <br>City: {{ venue.city }} <br>Venue: {{ venue.name }} </h5>
+						</div>
+					</a>
+				</li>
+			</td>
+			<td>
+				<form action="/venues/{{ venue.id }}/edit" method=get >
+					<input type=hidden value="{{ venue.id }}" name="venue_id" />
+					<input type=submit value="Edit"/>
+				</form>
+			</td>
+			<td>
+				&nbsp;&nbsp;
+			</td>
+			<td>
+				<form action="/venues/{{ venue.id }}/delete" method=post >
+					<input type=hidden value="{{ venue.id }}" name="venue_id" />
+					<input type=submit value="Delete"/>
+				</form>
+			</td>
+		</tr>
 		{% endfor %}
-	</ul>
+	</table>
+</ul>
 {% endfor %}
-<script>
-	function deletButtonClicked(e) {
-		console.log("Delete event: ", e);
-		
-		const venueId = e.target.dataset.id;
-		fetch('/venues/'+ venueId, {
-		method: 'DELETE'
-		}).then(function() {
-			console.log('Remove venu with id:', e.target.dataset.id, 'Done!');
-		})
-	}
-</script>
-
 {% endblock %}
-<!--
-<script>
-	let deleteBtns = document.querySelectorAll(".btn btn-danger");
-      
-	for (let i = 0; i < deleteBtns.length; i++) {
-	const deleteBtn = deleteBtns[i];
-	deleteBtn.onclick = function(e) {
-		console.log("Delete event: ", e);
-		const venueId = e.target.dataset.id;
-		fetch('/venues/'+ venueId, {
-		method: 'DELETE'
-		}).then(function() {
-			console.log('Remove venu with id:', e.target.dataset.id, 'Done!');
-			const item = e.target.parentElement;
-		})
-	};
-	}
-
-	function deletButtonClicked(e) {
-		console.log("Delete event: ", e);
-	}
-</script>
--->

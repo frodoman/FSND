@@ -139,9 +139,9 @@ def edit_artist(artist_id):
     "phone": data.phone,
     "website": data.website,
     "facebook_link": data.facebook_link,
-    "seeking_venue": True,
+    "seeking_venue": data.seeking_venue,
     "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
-    "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
+    "image_link": data.image_link
   }
 
   # TODO: populate form with fields from artist with ID <artist_id>
