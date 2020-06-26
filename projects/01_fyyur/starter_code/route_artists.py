@@ -175,7 +175,7 @@ def edit_artist_submission(artist_id):
     db.session.close()
 
   if error == True:
-    flash('Failed to modify artist ' + form.name +'!')
+    flash('Failed to modify artist ' + form.name.data +'!')
 
   return redirect(url_for('show_artist', artist_id=artist_id))
 
