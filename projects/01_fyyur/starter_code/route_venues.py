@@ -4,7 +4,8 @@ from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from forms import *
-from db_models_setup import Venue, Show
+from db_models_setup import *
+from datetime import *
 
 #  /venues
 #  ----------------------------------------------------------------
@@ -218,6 +219,20 @@ def show_venue(venue_id):
     flash('Venue (with id: ' + str(venue_id) + ') not found')
     return redirect(url_for('venues'))
 
+  shows = Show.query.filter(Show.venue_id== venue_id)
+  now = datetime.now()
+
+  future_shows = []
+  past_shows = []
+
+  if shows is not None:
+    for one_show in shows:
+      view_item = viewItemForAShow(one_show)
+      if one_show.time > now: 
+        future_shows.append(view_item)
+      else:
+        past_shows.append(view_item)
+
   data = dict()
   data['id'] = venue.id
   data['name'] = venue.name
@@ -227,8 +242,24 @@ def show_venue(venue_id):
   data['state'] = venue.state
   data['phone'] = venue.phone
   data['facebook_link'] = venue.facebook_link
+  data['upcoming_shows'] = future_shows
+  data['upcoming_shows_count'] = len(future_shows)
+  data['past_shows'] = past_shows
+  data['past_shows_count'] = len(past_shows)
 
   return render_template('pages/show_venue.html', venue=data)
+
+def viewItemForAShow(show):
+  view_item = dict()
+  view_item['artist_id'] = show.artist_id
+  view_item['start_time'] = dateTimeToString(show.time)
+
+  artist = Artist.query.get(show.artist_id)
+  if artist is not None: 
+    view_item['artist_name'] = artist.name
+    view_item['artist_image_link'] = artist.image_link
+  
+  return view_item
 
 # Delete a venue
 #  ----------------------------------------------------------------  
