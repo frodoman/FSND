@@ -53,7 +53,6 @@ def shows():
 
   presentShows = []
   shows = Show.query.all()
-  
 
   for oneShow in shows:
     data = {

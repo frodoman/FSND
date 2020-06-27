@@ -8,7 +8,7 @@
 	<table>
 		{% for venue in area.venues %}
 		<tr>
-			<td>
+			<td width=400px>
 				<li>
 					<a href="/venues/{{ venue.id }}">
 						<i class="fas fa-music"></i>
@@ -21,7 +21,7 @@
 			<td>
 				<form action="/venues/{{ venue.id }}/edit" method=get >
 					<input type=hidden value="{{ venue.id }}" name="venue_id" />
-					<input type=submit value="Edit"/>
+					<input type=submit class="btn btn-secondary" value="Edit"/>
 				</form>
 			</td>
 			<td>
@@ -30,7 +30,7 @@
 			<td>
 				<form action="/venues/{{ venue.id }}/delete" method=post >
 					<input type=hidden value="{{ venue.id }}" name="venue_id" />
-					<input type=submit value="Delete"/>
+					<input type=submit class="btn btn-danger" value="Delete"/>
 				</form>
 			</td>
 		</tr>
