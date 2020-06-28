@@ -3,6 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import *
 from helper import *
 
+#  ----------------------------------------------------------------  
+#  Show table
+#  ----------------------------------------------------------------  
 class Show(db.Model):
   __tablename__ = 'Show'
 
@@ -17,11 +20,18 @@ class Show(db.Model):
   def __repr__(self):
     return f'<Venue {self.title} {self.time}>'
 
+#  ----------------------------------------------------------------  
+#  Reference table between Show and Artist, 
+#  which is Many to Many relationship
+#  ----------------------------------------------------------------  
 show_artist = db.Table('show_artist', 
     db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id'), primary_key=True),
     db.Column('show_id', db.Integer, db.ForeignKey('Show.id'), primary_key=True)
 )
 
+#  ----------------------------------------------------------------  
+#  Artist table
+#  ----------------------------------------------------------------  
 class Artist(db.Model):
     __tablename__ = 'Artist'
 
@@ -44,11 +54,18 @@ class Artist(db.Model):
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
+#  ----------------------------------------------------------------  
+#  Reference table between Show and Venue, 
+#  which is Many to Many relationship
+#  ----------------------------------------------------------------  
 show_venue = db.Table('show_venue',
     db.Column('venu_id', db.Integer, db.ForeignKey('Venue.id'), primary_key=True),
     db.Column('show_id', db.Integer, db.ForeignKey('Show.id'), primary_key=True)
 )
 
+#  ----------------------------------------------------------------  
+#  Venue table
+#  ----------------------------------------------------------------  
 class Venue(db.Model):
     __tablename__ = 'Venue'
 
@@ -71,16 +88,19 @@ class Venue(db.Model):
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
+#  ----------------------------------------------------------------  
 #  Get all shows for a venue id
 #  ----------------------------------------------------------------
 def getShowsWithVenueId(venue_id):
   return getShowsWithId(venue_id, Venue())
 
+#  ----------------------------------------------------------------  
 #  Get all shows for an artist id
 #  ----------------------------------------------------------------
 def getShowsWithArtistId(artist_id):
   return getShowsWithId(artist_id, Artist())
 
+#  ----------------------------------------------------------------  
 #  Get all shows for a venue or artist id
 #  ----------------------------------------------------------------
 def getShowsWithId(itme_id, model:db.Model):
@@ -104,6 +124,7 @@ def getShowsWithId(itme_id, model:db.Model):
   
   return past_shows, future_shows
 
+#  ----------------------------------------------------------------  
 #  Convert a show object to displayable object
 #  ----------------------------------------------------------------
 def viewItemForAShow(show, model: db.Model):
