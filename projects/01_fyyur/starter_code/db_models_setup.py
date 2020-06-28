@@ -71,25 +71,18 @@ class Venue(db.Model):
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
+#  Get all shows for a venue id
+#  ----------------------------------------------------------------
 def getShowsWithVenueId(venue_id):
-  past, future = getShowsWithId(venue_id, Venue())
+  return getShowsWithId(venue_id, Venue())
 
-  past_shows = []
-  future_shows=[]
-
-  for oneShow in past:
-    past_shows.append(viewItemForAShow(oneShow))
-  
-  for oneShow in future:
-    future_shows.append(viewItemForAShow(oneShow))
-
-  return past_shows, future_shows
-
+#  Get all shows for an artist id
+#  ----------------------------------------------------------------
 def getShowsWithArtistId(artist_id):
   return getShowsWithId(artist_id, Artist())
 
-
-
+#  Get all shows for a venue or artist id
+#  ----------------------------------------------------------------
 def getShowsWithId(itme_id, model:db.Model):
 
   if isinstance(model, Artist):
@@ -103,21 +96,31 @@ def getShowsWithId(itme_id, model:db.Model):
 
   if shows is not None:
     for one_show in shows:
+      show_item = viewItemForAShow(one_show, model)
       if one_show.time > now: 
-        future_shows.append(one_show)
+        future_shows.append(show_item)
       else:
-        past_shows.append(one_show)
+        past_shows.append(show_item)
   
   return past_shows, future_shows
 
-def viewItemForAShow(show):
+#  Convert a show object to displayable object
+#  ----------------------------------------------------------------
+def viewItemForAShow(show, model: db.Model):
   view_item = dict()
-  view_item['artist_id'] = show.artist_id
   view_item['start_time'] = dateTimeToString(show.time)
 
-  artist = Artist.query.get(show.artist_id)
-  if artist is not None: 
-    view_item['artist_name'] = artist.name
-    view_item['artist_image_link'] = artist.image_link
+  if isinstance(model, Artist):
+    view_item['venue_id'] = show.venue_id
+    venue = Venue.query.get(show.venue_id)
+    if venue is not None:
+      view_item['venue_name'] = venue.name
+      view_item['venue_image_link'] = venue.image_link
+  else:
+    view_item['artist_id'] = show.artist_id
+    artist = Artist.query.get(show.artist_id)
+    if artist is not None: 
+      view_item['artist_name'] = artist.name
+      view_item['artist_image_link'] = artist.image_link
   
   return view_item

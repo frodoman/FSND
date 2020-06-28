@@ -4,7 +4,7 @@ from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from forms import *
-from db_models_setup import Artist, Show, Venue
+from db_models_setup import *
 
 @app.route('/artists/create', methods=['GET'])
 def create_artist_form():
@@ -99,6 +99,8 @@ def show_artist(artist_id):
     flash('Artist (with id: ' + str(artist_id) + ') not found')
     return redirect(url_for('venues'))
 
+  past_shows, future_shows = getShowsWithArtistId(artist_id)
+
   data = dict()
   data['id'] = artist.id
   data['name'] = artist.name
@@ -108,6 +110,10 @@ def show_artist(artist_id):
   data['state'] = artist.state
   data['phone'] = artist.phone
   data['facebook_link'] = artist.facebook_link
+  data['upcoming_shows'] = future_shows
+  data['upcoming_shows_count'] = len(future_shows)
+  data['past_shows'] = past_shows
+  data['past_shows_count'] = len(past_shows)
 
   return render_template('pages/show_artist.html', artist=data)
 

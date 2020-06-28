@@ -229,6 +229,7 @@ def show_venue(venue_id):
   data['city'] = venue.city
   data['state'] = venue.state
   data['phone'] = venue.phone
+  data['image_link'] = venue.image_link
   data['facebook_link'] = venue.facebook_link
   data['upcoming_shows'] = future_shows
   data['upcoming_shows_count'] = len(future_shows)
