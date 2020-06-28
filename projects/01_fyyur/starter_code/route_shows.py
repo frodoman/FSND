@@ -6,8 +6,9 @@ from sqlalchemy import func
 from forms import *
 from db_models_setup import *
 import helper
+from datetime import *
 
-#  Shows
+#  Display all the up coming shows
 #  ----------------------------------------------------------------
 @app.route('/shows')
 def shows():
@@ -52,7 +53,8 @@ def shows():
   }]
 
   presentShows = []
-  shows = Show.query.all()
+  now = datetime.now()
+  shows = Show.query.filter(Show.time > now).order_by(Show.time).all()
 
   for oneShow in shows:
     data = {
@@ -67,12 +69,16 @@ def shows():
 
   return render_template('pages/shows.html', shows=presentShows)
 
+#  Create a new show -UI
+#  ----------------------------------------------------------------
 @app.route('/shows/create')
 def create_shows():
   # renders form. do not touch.
   form = ShowForm()
   return render_template('forms/new_show.html', form=form)
 
+#  Create a new show -Submit
+#  ----------------------------------------------------------------
 @app.route('/shows/create', methods=['POST'])
 def create_show_submission():
   # called to create new shows in the db, upon submitting new show listing form
