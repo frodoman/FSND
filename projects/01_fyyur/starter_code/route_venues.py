@@ -219,19 +219,7 @@ def show_venue(venue_id):
     flash('Venue (with id: ' + str(venue_id) + ') not found')
     return redirect(url_for('venues'))
 
-  shows = Show.query.filter(Show.venue_id== venue_id)
-  now = datetime.now()
-
-  future_shows = []
-  past_shows = []
-
-  if shows is not None:
-    for one_show in shows:
-      view_item = viewItemForAShow(one_show)
-      if one_show.time > now: 
-        future_shows.append(view_item)
-      else:
-        past_shows.append(view_item)
+  past_shows, future_shows = getShowsWithVenueId(venue_id)
 
   data = dict()
   data['id'] = venue.id
@@ -248,18 +236,6 @@ def show_venue(venue_id):
   data['past_shows_count'] = len(past_shows)
 
   return render_template('pages/show_venue.html', venue=data)
-
-def viewItemForAShow(show):
-  view_item = dict()
-  view_item['artist_id'] = show.artist_id
-  view_item['start_time'] = dateTimeToString(show.time)
-
-  artist = Artist.query.get(show.artist_id)
-  if artist is not None: 
-    view_item['artist_name'] = artist.name
-    view_item['artist_image_link'] = artist.image_link
-  
-  return view_item
 
 # Delete a venue
 #  ----------------------------------------------------------------  

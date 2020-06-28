@@ -1,5 +1,7 @@
 from app import app, db, migrate, moment
 from flask_sqlalchemy import SQLAlchemy
+from datetime import *
+from helper import *
 
 class Show(db.Model):
   __tablename__ = 'Show'
@@ -68,3 +70,54 @@ class Venue(db.Model):
       return f'<Venue {self.id} {self.name} {self.city}>'
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
+
+def getShowsWithVenueId(venue_id):
+  past, future = getShowsWithId(venue_id, Venue())
+
+  past_shows = []
+  future_shows=[]
+
+  for oneShow in past:
+    past_shows.append(viewItemForAShow(oneShow))
+  
+  for oneShow in future:
+    future_shows.append(viewItemForAShow(oneShow))
+
+  return past_shows, future_shows
+
+def getShowsWithArtistId(artist_id):
+  return getShowsWithId(artist_id, Artist())
+
+
+
+def getShowsWithId(itme_id, model:db.Model):
+
+  if isinstance(model, Artist):
+    shows = Show.query.filter(Show.artist_id == itme_id)
+  else:
+    shows = Show.query.filter(Show.venue_id == itme_id)
+  
+  now = datetime.now()
+  future_shows = []
+  past_shows = []
+
+  if shows is not None:
+    for one_show in shows:
+      if one_show.time > now: 
+        future_shows.append(one_show)
+      else:
+        past_shows.append(one_show)
+  
+  return past_shows, future_shows
+
+def viewItemForAShow(show):
+  view_item = dict()
+  view_item['artist_id'] = show.artist_id
+  view_item['start_time'] = dateTimeToString(show.time)
+
+  artist = Artist.query.get(show.artist_id)
+  if artist is not None: 
+    view_item['artist_name'] = artist.name
+    view_item['artist_image_link'] = artist.image_link
+  
+  return view_item
