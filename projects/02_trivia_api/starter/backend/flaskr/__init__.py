@@ -51,29 +51,33 @@ def create_app(test_config=None):
   @app.route('/api/questions', methods=['GET'])
   def get_questions_by_page():
 
-    questions = [
-      {
-        "id": 1,
-        "question": "Q 1",
-        "answer": " A 1",
-        "category" :" Category 1",
-        "difficulty": 1
-      },
-      {
-        "id": 2,
-        "question": "Q 2",
-        "answer": " A 2",
-        "category" :" Category 2",
-        "difficulty": 2
-      }
-    ]
+    # prepare indexes
+    page_index = request.args.get('page', 1, type=int)
+    start = (page_index - 1) * QUESTIONS_PER_PAGE
+    end = start + QUESTIONS_PER_PAGE
 
+    # find all the questions
+    questions = Question.query.order_by(Question.id).all()
+    total_questions = len(questions)
+
+    # format questions
+    if questions is None or len(questions) < end:
+      abort(404)
+    else:
+      formated_questions = [question.format() for question in questions[start: end]]
+
+    # categories
+    formated_categories = []
+    categories = Category.query.all()
+    if categories is not None:
+      formated_categories = [oneCate.type for oneCate in categories]
 
     result = {
-      "questions": questions,
-      "total_questions": 2,
-      "categories": ["C 1", "C 2", "C 3"],
-      "current_category": "C 2"
+      "questions": formated_questions,
+      "total_questions": total_questions,
+      "categories": formated_categories,
+      "current_category": formated_questions[-1]['category'],
+      "page_index": page_index
     }
     return jsonify(result)
 
@@ -134,6 +138,13 @@ def create_app(test_config=None):
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
+  @app.errorhandler(404)
+  def error_not_found(error):
+    return jsonify({
+      "success": False,
+      "error": 404,
+      "message": "Question not found!"
+    }), 404
   
   return app
 
