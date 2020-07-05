@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, abort, jsonify
+from flask import Flask, render_template, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
@@ -16,17 +16,25 @@ def create_app(test_config=None):
   '''
   @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
   '''
+  CORS(app, resources={r"/api/*": {"origins": "*"}})
 
   '''
   @TODO: Use the after_request decorator to set Access-Control-Allow
   '''
+  @app.after_request 
+  def after_request(response):
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
+    return response
 
   '''
   @TODO: 
   Create an endpoint to handle GET requests 
   for all available categories.
   '''
-
+  @app.route('/')
+  def index():
+    return render_template('home.html')
 
   '''
   @TODO: 
@@ -40,6 +48,34 @@ def create_app(test_config=None):
   ten questions per page and pagination at the bottom of the screen for three pages.
   Clicking on the page numbers should update the questions. 
   '''
+  @app.route('/api/questions', methods=['GET'])
+  def get_questions_by_page():
+
+    questions = [
+      {
+        "id": 1,
+        "question": "Q 1",
+        "answer": " A 1",
+        "category" :" Category 1",
+        "difficulty": 1
+      },
+      {
+        "id": 2,
+        "question": "Q 2",
+        "answer": " A 2",
+        "category" :" Category 2",
+        "difficulty": 2
+      }
+    ]
+
+
+    result = {
+      "questions": questions,
+      "total_questions": 2,
+      "categories": ["C 1", "C 2", "C 3"],
+      "current_category": "C 2"
+    }
+    return jsonify(result)
 
   '''
   @TODO: 
