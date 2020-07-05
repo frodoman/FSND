@@ -61,7 +61,7 @@ def create_app(test_config=None):
     total_questions = len(questions)
 
     # format questions
-    if questions is None or len(questions) < end:
+    if questions is None or len(questions) < start:
       abort(404)
     else:
       formated_questions = [question.format() for question in questions[start: end]]
