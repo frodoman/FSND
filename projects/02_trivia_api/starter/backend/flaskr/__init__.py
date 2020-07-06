@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
 
-from models import setup_db, Question, Category
+from models import setup_db, Question, Category, db
 
 QUESTIONS_PER_PAGE = 10
 
@@ -27,15 +27,26 @@ def create_app(test_config=None):
     response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
     return response
 
+  @app.route('/')
+  def index():
+    return render_template('home.html')
+
   '''
   @TODO: 
   Create an endpoint to handle GET requests 
   for all available categories.
   '''
-  @app.route('/')
-  def index():
-    return render_template('home.html')
+  @app.route('/api/categories', methods=['GET'])
+  def get_all_categories():
+    formated_categories = []
+    categories = Category.query.all()
+    if categories is not None:
+      formated_categories = [oneCate.type for oneCate in categories]
 
+    return jsonify({
+      "categories": formated_categories
+    })
+  
   '''
   @TODO: 
   Create an endpoint to handle GET requests for questions, 
@@ -99,6 +110,29 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.  
   '''
+  @app.route('/api/questions/create', methods=['POST'])
+  def create_question():
+    details = request.get_json()
+
+    try:
+      question = Question()
+      question.question = details['question']
+      question.answer = details['answer']
+      question.difficulty = int(details['difficulty'])
+      question.category = int(details['category'])
+      
+      db.session.add(question)
+      db.session.commit()
+    except:
+      db.session.rollback()
+      abort(501)
+    finally:
+      db.session.close()
+
+    return jsonify({
+      "status": "Create Suceeded!",
+      "details": "Question: " + details['question'] + ""
+    })
 
   '''
   @TODO: 
