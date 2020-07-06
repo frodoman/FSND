@@ -115,11 +115,10 @@ def create_app(test_config=None):
     details = request.get_json()
 
     try:
-      question = Question()
-      question.question = details['question']
-      question.answer = details['answer']
-      question.difficulty = int(details['difficulty'])
-      question.category = int(details['category'])
+      question = Question(question = details['question'],
+                          answer = details['answer'],
+                          difficulty = int(details['difficulty']),
+                          category = int(details['category']))
       
       db.session.add(question)
       db.session.commit()
@@ -197,6 +196,14 @@ def create_app(test_config=None):
       "message": "Question not found!"
     }), 404
   
+  
+  @app.errorhandler(501)
+  def error_not_found(error):
+    return jsonify({
+      "success": False,
+      "error": 501,
+      "message": "Failed to create a question."
+    }), 501
   return app
 
     
