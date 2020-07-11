@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
+import sys
 
 from models import setup_db, Question, Category, db
 
@@ -16,7 +17,8 @@ def create_app(test_config=None):
   '''
   @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
   '''
-  CORS(app, resources={r"/api/*": {"origins": "*"}})
+  #CORS(app, resources={r"/api/*": {"origins": "*"}})
+  CORS(app)
 
   '''
   @TODO: Use the after_request decorator to set Access-Control-Allow
@@ -112,8 +114,7 @@ def create_app(test_config=None):
   '''
   @app.route('/api/questions/create', methods=['POST'])
   def create_question():
-    details = request.get_json()
-
+    details = request.json
     try:
       question = Question(question = details['question'],
                           answer = details['answer'],
@@ -123,7 +124,7 @@ def create_app(test_config=None):
       db.session.add(question)
       db.session.commit()
     except:
-      db.session.rollback()
+      db.session.rollback()   
       abort(501)
     finally:
       db.session.close()

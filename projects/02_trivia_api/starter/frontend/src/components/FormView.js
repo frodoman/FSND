@@ -45,7 +45,7 @@ class FormView extends Component {
         category: this.state.category
       }),
       xhrFields: {
-        withCredentials: true
+        withCredentials: false
       },
       crossDomain: true,
       success: (result) => {
