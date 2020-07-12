@@ -171,6 +171,23 @@ def create_app(test_config=None):
   only question that include that string within their question. 
   Try using the word "title" to start. 
   '''
+  @app.route('/api/questions/search', methods=['POST'])
+  def search_question():
+    searchTerms = request.json['searchTerm']
+    
+    result = dict()
+    if searchTerms is None or len(searchTerms) == 0:
+      result['questions'] = []
+      result['total_questions'] = 0
+      result['current_category'] = 0
+      return jsonify(result)
+    
+    return jsonify({
+      'questions': ["AA", "bB"],
+      'total_questions': 2,
+      'current_category': 0
+    })
+  
 
   '''
   @TODO: 
