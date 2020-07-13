@@ -117,11 +117,7 @@ def create_app(test_config=None):
       db.session.close()
 
     if error: 
-      return jsonify({
-      "message": "Failed to delete question",
-      "question_id": question_id
-      })
-
+      abort(500)
     else: 
       return jsonify({
       "message": "Question deleted!",
@@ -236,6 +232,9 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
+  @app.route('/api/quizzes', methods=['POST'])
+  def play_quizzes():
+    
 
   '''
   @TODO: 
@@ -252,12 +251,21 @@ def create_app(test_config=None):
   
   
   @app.errorhandler(501)
-  def error_not_found(error):
+  def error_create_failed(error):
     return jsonify({
       "success": False,
       "error": 501,
       "message": "Failed to create a question."
     }), 501
+
+  @app.errorhandler(500)
+  def error_server(error):
+    return jsonify({
+      "success": False,
+      "error": 500,
+      "message": "Internal server error."
+    }), 500
+
   return app
 
     
