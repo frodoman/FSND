@@ -182,10 +182,19 @@ def create_app(test_config=None):
       result['current_category'] = 0
       return jsonify(result)
     
+    likeWords = "%" + searchTerms + "%"
+
+    results = Question.query.filter(Question.question.ilike(likeWords)).order_by(Question.question).all()
+
+    viewItems = []
+    if len(results) > 0:
+      for oneResult in results:
+        viewItems.append(oneResult.format())
+
     return jsonify({
-      'questions': ["AA", "bB"],
-      'total_questions': 2,
-      'current_category': 0
+      'questions': viewItems,
+      'total_questions': len(viewItems),
+      'current_category': 2,
     })
   
 
