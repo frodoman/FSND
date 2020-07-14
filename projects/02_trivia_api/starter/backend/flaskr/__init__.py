@@ -27,6 +27,7 @@ def create_app(test_config=None):
   def after_request(response):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
+    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
   @app.route('/')
@@ -234,7 +235,29 @@ def create_app(test_config=None):
   '''
   @app.route('/api/quizzes', methods=['POST'])
   def play_quizzes():
-    
+    request_data = request.json
+
+    previous = request_data['previous_questions']
+    category = request_data['quiz_category']
+
+    if category is not None:
+      query = Question.query.filter(Question.category==category)
+      if previous is not None and len(previous) > 0:
+        question = random.choice(query.filter(Question.id.notin_(previous)).all())
+      else: 
+        question = random.choice(query.all())
+
+    else: 
+      query = Question.query
+      if previous is not None and len(previous) > 0: 
+        question = random.choice( query.filter(Question.id.notin_(previous)).all())
+      else: 
+        question = random.choice(query.all())
+      
+    return jsonify({
+      "previousQuestions": previous, 
+      "question": question.format()
+    })
 
   '''
   @TODO: 
