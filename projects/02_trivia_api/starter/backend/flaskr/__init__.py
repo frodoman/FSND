@@ -236,9 +236,16 @@ def create_app(test_config=None):
   @app.route('/api/quizzes', methods=['POST'])
   def play_quizzes():
     request_data = request.json
+    key_previous = 'previous_questions'
+    key_category = 'quiz_category'
 
-    previous = request_data['previous_questions']
-    category = request_data['quiz_category']
+    previous = None
+    if key_previous in request_data:
+      previous = request_data[key_previous]
+
+    category = None
+    if key_category in request_data:
+      category = request_data[key_category]
 
     if category is not None:
       query = Question.query.filter(Question.category==category)
