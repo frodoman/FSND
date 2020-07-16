@@ -33,6 +33,24 @@ class TriviaTestCase(unittest.TestCase):
     TODO
     Write at least one test for each test for successful operation and for expected errors.
     """
+    def test_get_all_categories(self):
+        res = self.client().get('/api/categories')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(len(data['categories'])>0)
+
+    def test_get_questions_by_page(self):
+        res = self.client().get('/api/questions?page=2')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(len(data['questions'])>0)
+
+    def test_get_questions_by_page_error_handlers(self):
+        res = self.client().get('/api/questions?page=100')
+        self.assertEqual(res.status_code, 404)
+
 
 
 # Make the tests conveniently executable
