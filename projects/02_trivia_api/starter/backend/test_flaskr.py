@@ -59,6 +59,13 @@ class TriviaTestCase(unittest.TestCase):
         else: 
             return None
 
+    def add_mock_question_if_needed(self):
+        mock = self.get_mock_question_from_db()
+        if mock is None: 
+            self.add_mock_question_to_db()
+        
+        return
+
     # get all categories
     def test_get_all_categories(self):
         res = self.client().get('/api/categories')
@@ -114,6 +121,60 @@ class TriviaTestCase(unittest.TestCase):
         # make sure the mock question exist in db
         mock = self.get_mock_question_from_db()
         self.assertIsNotNone(mock)
+
+    # test search 
+    def test_search_question(self):
+        self.add_mock_question_if_needed()
+        searchTerm = {'searchTerm': 'Mock Question'}
+
+        res = self.client().post('/api/questions/search', json=searchTerm)
+        self.assertEqual(res.status_code, 200)
+
+        res_data = json.loads(res.data)
+        res_questions = res_data['questions']
+        self.assertIsNotNone(res_questions)
+        self.assertTrue(len(res_questions) > 0)
+
+    # test questions by category
+    def test_get_questions_by_category(self):
+        res = self.client().get('/api/categories/2/questions')
+        self.assertEqual(res.status_code, 200)
+
+        res_data = json.loads(res.data)
+        res_questions = res_data['questions']
+        self.assertIsNotNone(res_questions)
+        self.assertTrue(len(res_questions) > 0)
+
+    # test quiz logic
+    def play_quizzes(self, payload:dict):
+
+        url = '/api/quizzes'
+        res = self.client().post(url, json=payload)
+        return res
+
+
+    def test_play_quizzes_empty_payload(self):
+        res = self.play_quizzes( {
+            'previous_questions':[]
+        })
+
+        self.assertEqual(res.status_code, 200)
+
+        res_data = json.loads(res.data)
+        res_questions = res_data['question']
+        self.assertIsNotNone(res_questions)
+        self.assertTrue(len(res_questions) > 0)
+    
+    def test_play_quizzes_payload(self):
+        question_ids = [2, 5, 10]
+        res = self.play_quizzes({
+                'previous_questions': question_ids
+            })
+        
+        self.assertEqual(res.status_code, 200)
+        res_data = json.loads(res.data)
+        question_id = res_data['question']['id']
+        self.assertFalse(question_id in question_ids)
 
 
 # Make the tests conveniently executable
