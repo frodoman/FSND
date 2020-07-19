@@ -23,13 +23,35 @@ Currently the API can return these error if failed:
 
 ### GET /api/categories 
 * General
-    - Return a list of supported question categories
+    - Return a list of available question categories
     - Results will be an array of string objects
 * Sample 
     ```bash
     curl http://127.0.0.1:5000/api/categories
     ```
-```bash 
+    ```bash 
+    {
+    "categories": [
+        "Science", 
+        "Art", 
+        "Geography", 
+        "History", 
+        "Entertainment", 
+        "Sports"
+    ]
+    }
+    ```
+
+### GET /api/questions
+* General
+    - Return a list of max 10 questions of the provided page index; a list of available categories and pagination information
+* Parameter
+    - ```bash page ```, data type ```bash int ```, indicate the page index, start and default to 1
+* Sample
+    ```bash 
+    curl http://127.0.0.1:5000/api/questions?page=2
+    ```
+    ```bash
 {
   "categories": [
     "Science", 
@@ -38,6 +60,19 @@ Currently the API can return these error if failed:
     "History", 
     "Entertainment", 
     "Sports"
-  ]
+  ], 
+  "current_category": 4, 
+  "page_index": 2, 
+  "questions": [
+    {
+      "answer": "Agra", 
+      "category": 3, 
+      "difficulty": 2, 
+      "id": 15, 
+      "question": "The Taj Mahal is located in which Indian city?"
+    }, 
+    ...
+  ], 
+  "total_questions": 19
 }
-```
+    ```
