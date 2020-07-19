@@ -13,5 +13,10 @@ Errors are returned as JSON object in the following format:
   "success": false
 }
 ```
+Currently the API can return these error if failed: 
+* 404: Not found
+* 422: Unprocessable Entity
+* 500: Internal server error
+
 
 ## 
