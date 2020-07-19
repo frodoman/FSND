@@ -177,4 +177,31 @@ curl --request GET http://127.0.0.1:5000/api/categories/3/questions
 }
 ```
 
+### POST /api/quizzes 
+
+* General
+    - Return one question based on the provided previous question IDs and category
+    - Result qestion is randomly selected and not in the previous question IDs
+
+* Sample
+```bash
+curl --request POST --header "Content-Type: application/json" --data '{"previous_questions":[3, 7, 10], "quiz_category":null }' http://127.0.0.1:5000/api/quizzes
+```
+Return
+```bash
+{
+  "previousQuestions": [
+    3, 
+    7, 
+    10
+  ], 
+  "question": {
+    "answer": "Scarab", 
+    "category": 4, 
+    "difficulty": 4, 
+    "id": 23, 
+    "question": "Which dung beetle was worshipped by the ancient Egyptians?"
+  }
+}
+```
 
