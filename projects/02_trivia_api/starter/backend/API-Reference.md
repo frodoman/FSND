@@ -1,7 +1,7 @@
 # Full Stack Trivia API Reference 
 
 ## Getting Started
-* Base URl: Currently this app can only run locally. The backend is host at the default url: [http://127.0.0.1:5000/](http://127.0.0.1:5000/), which is configured as the proxy of the frontend app.
+* Base URL: Currently this app can only run locally. The backend is host at the default url: [http://127.0.0.1:5000/](http://127.0.0.1:5000/), which is configured as the proxy of the frontend app.
 * Authentication: No authentication required to access the API end points.
 
 ## Error Handling
@@ -77,7 +77,7 @@ Currently the API can return these error if failed:
 }
 ```
 
-### DELETE '/api/questions/{question_id}
+### DELETE /api/questions/{question_id}
 
 
 * General
@@ -93,3 +93,18 @@ Currently the API can return these error if failed:
 ```
 * if failed, return ``` 500 ``` error code.
 
+### POST /api/questions/create
+
+* General
+    - Create a new question with the provided parameters
+* Request body
+    - Type: Json object
+    - Sample: 
+    ```bash 
+    {
+        "question": "how old was michael jackson when he died",
+        "answer":"50",
+        "difficulty": 2, 
+        "category": 3
+    } 
+    ``` 
