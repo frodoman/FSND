@@ -169,17 +169,19 @@ def create_app(test_config=None):
   '''
   @app.route('/api/questions/search', methods=['POST'])
   def search_question():
-    searchTerms = request.json['searchTerm']
-    
-    result = dict()
-    if searchTerms is None or len(searchTerms) == 0:
-      result['questions'] = []
-      result['total_questions'] = 0
-      result['current_category'] = 0
-      return jsonify(result)
-    
-    likeWords = "%" + searchTerms + "%"
 
+    # make sure we have valid search terms
+    key = 'searchTerm'
+    if key in request.json:
+      searchTerms = request.json[key]
+    else: 
+      abort(422)
+    
+    if searchTerms is None or len(searchTerms) == 0:
+      abort(422)
+    
+    # find the question by search terms
+    likeWords = "%" + searchTerms + "%"
     results = Question.query.filter(Question.question.ilike(likeWords)).order_by(Question.question).all()
 
     viewItems = []
