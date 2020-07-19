@@ -76,6 +76,7 @@ def create_app(test_config=None):
     # format questions
     if questions is None or len(questions) < start:
       abort(404)
+    # filter all questions for the current page index
     else:
       formated_questions = [question.format() for question in questions[start: end]]
 
@@ -107,7 +108,6 @@ def create_app(test_config=None):
     try:
       question = Question.query.get(question_id) 
 
-      # clean Artist table
       db.session.delete(question)
       db.session.commit()
     except():
@@ -148,7 +148,7 @@ def create_app(test_config=None):
       db.session.commit()
     except:
       db.session.rollback()   
-      abort(501)
+      abort(500)
     finally:
       db.session.close()
 
@@ -248,17 +248,23 @@ def create_app(test_config=None):
     if key_category in request_data:
       category = request_data[key_category]
 
+    # category is provided
     if category is not None:
       query = Question.query.filter(Question.category==category)
+      # filter out previouse questions
       if previous is not None and len(previous) > 0:
         question = random.choice(query.filter(Question.id.notin_(previous)).all())
+      # randomly return a question when no prameters are provided
       else: 
         question = random.choice(query.all())
-
+    
+    # category is not provided
     else: 
       query = Question.query
+      # filter out previouse questions
       if previous is not None and len(previous) > 0: 
         question = random.choice( query.filter(Question.id.notin_(previous)).all())
+      # randomly return a question when no prameters are provided
       else: 
         question = random.choice(query.all())
       
@@ -287,14 +293,6 @@ def create_app(test_config=None):
       "error": 422,
       "message": "Unprocessable Entity!"
     }), 422
-  
-  @app.errorhandler(501)
-  def error_create_failed(error):
-    return jsonify({
-      "success": False,
-      "error": 501,
-      "message": "Failed to create a question."
-    }), 501
 
   @app.errorhandler(500)
   def error_server(error):
