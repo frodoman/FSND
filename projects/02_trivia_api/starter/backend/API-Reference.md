@@ -46,12 +46,12 @@ Currently the API can return these error if failed:
 * General
     - Return a list of max 10 questions of the provided page index; a list of available categories and pagination information
 * Parameter
-    - ```bash page ```, data type ```bash int ```, indicate the page index, start and default to 1
+    - ``` page ```, data type ``` int ```, indicate the page index, start and default to 1
 * Sample
     ```bash 
     curl http://127.0.0.1:5000/api/questions?page=2
     ```
-    ```bash
+```bash
 {
   "categories": [
     "Science", 
@@ -75,4 +75,4 @@ Currently the API can return these error if failed:
   ], 
   "total_questions": 19
 }
-    ```
+```
