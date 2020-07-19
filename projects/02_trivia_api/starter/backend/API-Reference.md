@@ -28,7 +28,8 @@ Currently the API can return these error if failed:
 * Sample 
     ```bash
     curl http://127.0.0.1:5000/api/categories
-    
+    ```
+```bash 
 {
   "categories": [
     "Science", 
