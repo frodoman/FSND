@@ -120,3 +120,61 @@ If successful, return
 }
 ```
 
+### POST /api/questions/search
+* General
+    - Return a list of questions by the provided search keywords/terms.
+
+* Sample: 
+```bash
+curl --request POST --header "Content-Type: application/json" --data '{"searchTerm":"how old"}' http://127.0.0.1:5000/api/questions/search
+```
+If successful, return (questions may be an empty array)
+```bash
+{
+  "current_category": 2, 
+  "questions": [
+    {
+      "answer": "50", 
+      "category": 3, 
+      "difficulty": 2, 
+      "id": 43, 
+      "question": "how old"
+    }
+  ], 
+  "total_questions": 1
+}
+```
+
+### GET /api/categories/{category_id}/questions
+* General
+    - Return a list of questions by the provided category id
+
+* Sample: 
+```bash
+curl --request GET http://127.0.0.1:5000/api/categories/3/questions
+```
+```bash
+{
+  "current_category": 3, 
+  "questions": [
+    {
+      "answer": "Lake Victoria", 
+      "category": 3, 
+      "difficulty": 2, 
+      "id": 13, 
+      "question": "What is the largest lake in Africa?"
+    }, 
+    {
+      "answer": "The Palace of Versailles", 
+      "category": 3, 
+      "difficulty": 3, 
+      "id": 14, 
+      "question": "In which royal palace would you find the Hall of Mirrors?"
+    }, 
+    ...
+  ], 
+  "total_questions": 4
+}
+```
+
+
