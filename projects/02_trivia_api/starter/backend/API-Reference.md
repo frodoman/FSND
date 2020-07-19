@@ -108,3 +108,15 @@ Currently the API can return these error if failed:
         "category": 3
     } 
     ``` 
+* Sample: 
+```bash
+curl --request POST --header "Content-Type: application/json" --data '{"question":"how old", "answer":"50", "difficulty":2, "category":3}' http://127.0.0.1:5000/api/questions/create
+```
+If successful, return
+```bash
+{
+  "details": "Question: how old", 
+  "status": "Create Suceeded!"
+}
+```
+
