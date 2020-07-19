@@ -19,4 +19,24 @@ Currently the API can return these error if failed:
 * 500: Internal server error
 
 
-## 
+## Endpoints
+
+### GET /api/categories 
+* General
+    - Return a list of supported question categories
+    - Results will be an array of string objects
+* Sample 
+    ```bash
+    curl http://127.0.0.1:5000/api/categories
+    
+{
+  "categories": [
+    "Science", 
+    "Art", 
+    "Geography", 
+    "History", 
+    "Entertainment", 
+    "Sports"
+  ]
+}
+```
