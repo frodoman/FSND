@@ -2,8 +2,16 @@
 
 ## Getting Started
 * Base URl: Currently this app can only run locally. The backend is host at the default url: [http://127.0.0.1:5000/](http://127.0.0.1:5000/), which is configured as the proxy of the frontend app.
-* Authentication: No quthentication required 
+* Authentication: No authentication required to access the API end points.
 
-## Error Handlers
+## Error Handling
+Errors are returned as JSON object in the following format: 
+```bash
+{
+  "error": 404, 
+  "message": "Not found!", 
+  "success": false
+}
+```
 
 ## 
