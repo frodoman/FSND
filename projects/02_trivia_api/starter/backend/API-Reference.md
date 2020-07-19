@@ -46,7 +46,7 @@ Currently the API can return these error if failed:
 * General
     - Return a list of max 10 questions of the provided page index; a list of available categories and pagination information
 * Parameter
-    - ``` page ```, data type ``` int ```, indicate the page index, start and default to 1
+    - ``` page ```, data type ``` int ```, indicate the page index, start from and default to 1
 * Sample
     ```bash 
     curl http://127.0.0.1:5000/api/questions?page=2
@@ -76,3 +76,20 @@ Currently the API can return these error if failed:
   "total_questions": 19
 }
 ```
+
+### DELETE '/api/questions/{question_id}
+
+
+* General
+    - Delete a question with the provided question id
+* Sample
+    ```curl -X DELETE http://127.0.0.1:5000/api/questions/2 ```
+* If successfuly, eturn
+```bash
+{
+    "message": "Question deleted!",
+    "question_id": 2
+}
+```
+* if failed, return ``` 500 ``` error code.
+
