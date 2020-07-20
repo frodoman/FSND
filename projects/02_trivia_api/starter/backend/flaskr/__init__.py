@@ -181,13 +181,13 @@ def create_app(test_config=None):
       abort(422)
     
     # find the question by search terms
-    likeWords = "%" + searchTerms + "%"
-    results = Question.query.filter(Question.question.ilike(likeWords)).order_by(Question.question).all()
+    keywords = "%" + searchTerms + "%"
+    results = Question.query.filter(Question.question.ilike(keywords)).order_by(Question.question).all()
 
     viewItems = []
     if len(results) > 0:
-      for oneResult in results:
-        viewItems.append(oneResult.format())
+      for result in results:
+        viewItems.append(result.format())
 
     return jsonify({
       'questions': viewItems,

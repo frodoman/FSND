@@ -10,7 +10,7 @@ class FormView extends Component {
       question: "",
       answer: "",
       difficulty: 1,
-      category: 1,
+      category: 0,
       categories: {}
     }
   }
@@ -41,7 +41,7 @@ class FormView extends Component {
       data: JSON.stringify({
         question: this.state.question,
         answer: this.state.answer,
-        difficulty: this.state.difficulty,
+        difficulty: parseInt(this.state.difficulty),
         category: parseInt(this.state.category) + 1
       }),
       xhrFields: {
@@ -50,6 +50,7 @@ class FormView extends Component {
       crossDomain: true,
       success: (result) => {
         document.getElementById("add-question-form").reset();
+        this.setState({["category"]: 0, ["difficulty"]: 1})
         return;
       },
       error: (error) => {
