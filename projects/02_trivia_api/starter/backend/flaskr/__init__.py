@@ -248,12 +248,15 @@ def create_app(test_config=None):
     if key_category in request_data:
       category = request_data[key_category]
 
+    question = None
     # category is provided
     if category is not None:
       query = Question.query.filter(Question.category==category)
       # filter out previouse questions
       if previous is not None and len(previous) > 0:
-        question = random.choice(query.filter(Question.id.notin_(previous)).all())
+        questions = query.filter(Question.id.notin_(previous)).all()
+        if questions is not None and len(questions) > 0:
+          question = random.choice(questions)
       # randomly return a question when no prameters are provided
       else: 
         question = random.choice(query.all())
@@ -263,14 +266,20 @@ def create_app(test_config=None):
       query = Question.query
       # filter out previouse questions
       if previous is not None and len(previous) > 0: 
-        question = random.choice( query.filter(Question.id.notin_(previous)).all())
+        questions = query.filter(Question.id.notin_(previous)).all()
+        if questions is not None and len(questions) > 0:
+          question = random.choice(questions)
       # randomly return a question when no prameters are provided
       else: 
         question = random.choice(query.all())
-      
+    
+    format_question :dict = None
+    if question is not None: 
+      format_question = question.format()
+    
     return jsonify({
       "previousQuestions": previous, 
-      "question": question.format()
+      "question": format_question
     })
 
   '''
