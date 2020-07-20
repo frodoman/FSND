@@ -285,7 +285,7 @@ def create_app(test_config=None):
       else: 
         question = random.choice(query.all())
     
-    format_question :dict = None
+    format_question:dict = None
     if question is not None: 
       format_question = question.format()
     
