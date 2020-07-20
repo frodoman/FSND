@@ -140,6 +140,10 @@ def create_app(test_config=None):
   @app.route('/api/questions/create', methods=['POST'])
   def create_question():
     details = request.json
+
+    if not is_valid_question(details):
+      abort(422)
+
     try:
       question = Question(question = details['question'],
                           answer = details['answer'],
@@ -158,6 +162,12 @@ def create_app(test_config=None):
       "status": "Create Suceeded!",
       "details": "Question: " + details['question'] + ""
     })
+
+  def is_valid_question(dict_question):
+    if 'question' in dict_question and 'answer' in dict_question and 'difficulty' in dict_question and 'category' in dict_question: 
+       return True
+    else:
+      return False
 
   '''
   @TODO: 
@@ -212,7 +222,7 @@ def create_app(test_config=None):
 
     db_questions = Question.query.filter(Question.category==category_id).all()
 
-    if db_questions is None:
+    if db_questions is None or len(db_questions) == 0:
       abort(404)
 
     formated_questions = [oneQuestion.format() for oneQuestion in db_questions]

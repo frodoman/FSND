@@ -109,13 +109,12 @@ class TriviaTestCase(unittest.TestCase):
         question = Question.query.get(question_id)
         self.assertIsNone(question)
 
-    def test_delete_question_error(self):
+    def test_delete_question_error_handlers(self):
         question_id = 40000
         url = '/api/questions/{}'.format(question_id)
         res = self.client().delete(url)
         
         self.assertEqual(res.status_code, 404)
-
 
     # test adding a question
     def test_create_question(self):
@@ -133,6 +132,12 @@ class TriviaTestCase(unittest.TestCase):
         mock = self.get_mock_question_from_db()
         self.assertIsNotNone(mock)
 
+    def test_create_question_error_handlers(self):
+        json_dict = {"Error":"Message"}
+        res = self.client().post('/api/questions/create', json=json_dict)
+
+        self.assertEqual(res.status_code, 422)
+
     # test search 
     def test_search_question(self):
         self.add_mock_question_if_needed()
@@ -146,6 +151,14 @@ class TriviaTestCase(unittest.TestCase):
         self.assertIsNotNone(res_questions)
         self.assertTrue(len(res_questions) > 0)
 
+    def test_search_question_error_handlers(self):
+        url = '/api/questions/search'
+        res = self.client().post(url, json={"searchTerm":""})
+        self.assertEqual(res.status_code, 422)
+
+        res = self.client().post(url, json={"searchTerms":"Mock"})
+        self.assertEqual(res.status_code, 422)
+
     # test questions by category
     def test_get_questions_by_category(self):
         res = self.client().get('/api/categories/2/questions')
@@ -155,6 +168,10 @@ class TriviaTestCase(unittest.TestCase):
         res_questions = res_data['questions']
         self.assertIsNotNone(res_questions)
         self.assertTrue(len(res_questions) > 0)
+
+    def test_get_questions_by_category_error_handlers(self):
+        res = self.client().get('/api/categories/222/questions')
+        self.assertEqual(res.status_code, 404)
 
     # test quiz logic
     def play_quizzes(self, payload:dict):
