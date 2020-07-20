@@ -107,6 +107,8 @@ def create_app(test_config=None):
     error = False
     try:
       question = Question.query.get(question_id) 
+      if question is None:
+        abort(404)
 
       db.session.delete(question)
       db.session.commit()

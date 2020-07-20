@@ -94,10 +94,8 @@ class TriviaTestCase(unittest.TestCase):
 
     # test deleting a question
     def test_delete_question(self):
+        self.add_mock_question_if_needed()
         mock = self.get_mock_question_from_db()
-        if mock is None: 
-            self.add_mock_question_to_db()
-            mock = self.get_mock_question_from_db()
         
         question_id = mock.id
         print("Mock Question id", question_id)
@@ -110,6 +108,14 @@ class TriviaTestCase(unittest.TestCase):
 
         question = Question.query.get(question_id)
         self.assertIsNone(question)
+
+    def test_delete_question_error(self):
+        question_id = 40000
+        url = '/api/questions/{}'.format(question_id)
+        res = self.client().delete(url)
+        
+        self.assertEqual(res.status_code, 404)
+
 
     # test adding a question
     def test_create_question(self):
