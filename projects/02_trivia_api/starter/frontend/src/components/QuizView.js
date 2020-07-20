@@ -35,12 +35,14 @@ class QuizView extends Component {
     })
   }
 
-  selectCategory = ({type, id=0}) => {
-    if(id != 0) {
-      this.state.quizCategory = parseInt(id)
+  selectCategory = ({type, id=null}) => {
+    console.log('Coming Category ' + id);
+
+    if(id == null) {
+      this.state.quizCategory = null
     }
     else {
-      this.state.quizCategory = null
+      this.state.quizCategory = parseInt(id) + 1
     }
     console.log('Selected Category ' + this.state.quizCategory);
     this.getNextQuestion()
@@ -176,9 +178,9 @@ class QuizView extends Component {
 
 
   render() {
-    return this.state.quizCategory
-        ? this.renderPlay()
-        : this.renderPrePlay()
+    return JSON.stringify(this.state.currentQuestion) === '{}'
+        ? this.renderPrePlay() 
+        : this.renderPlay()
   }
 }
 
