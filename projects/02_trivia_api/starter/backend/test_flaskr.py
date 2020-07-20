@@ -74,6 +74,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTrue(len(data['categories'])>0)
 
+    def test_get_all_categories_error(self):
+        res = self.client().post('/api/categories')
+        self.assertEqual(res.status_code, 405)
+
+
     # test get questions by page
     def test_get_questions_by_page(self):
         res = self.client().get('/api/questions?page=2')
