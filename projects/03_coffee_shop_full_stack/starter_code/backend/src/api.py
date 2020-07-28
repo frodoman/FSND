@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify, abort
+from flask import Flask, render_template, request, jsonify, abort
 from sqlalchemy import exc
 import json
 from flask_cors import CORS
@@ -9,14 +9,27 @@ from .auth.auth import AuthError, requires_auth
 
 app = Flask(__name__)
 setup_db(app)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 '''
 @TODO uncomment the following line to initialize the datbase
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 '''
-# db_drop_and_create_all()
+#db_drop_and_create_all()
+
+@app.after_request 
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/')
+def index():
+    return jsonify({
+        "Index": "HOME"
+    })
 
 ## ROUTES
 '''
@@ -27,7 +40,6 @@ CORS(app)
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
-
 
 '''
 @TODO implement endpoint
