@@ -40,6 +40,21 @@ def index():
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks', methods=['GET'])
+def get_drinks():
+    drinks = Drink.query.all()
+
+    drinks_result = []
+
+    if drinks is not None and len(drinks) > 0:
+        for drink in drinks:
+            drinks_result.append(drink.short())
+    
+    return jsonify({
+        "success": True,
+        "drinks": drinks_result
+    })
+
 
 '''
 @TODO implement endpoint
@@ -49,7 +64,20 @@ def index():
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks-detail', methods=['GET'])
+def get_drinks_detail():
+    drinks = Drink.query.all()
 
+    drinks_result = []
+
+    if drinks is not None and len(drinks) > 0:
+        for drink in drinks:
+            drinks_result.append(drink.long())
+    
+    return jsonify({
+        "success": True,
+        "drinks": drinks_result
+    })
 
 '''
 @TODO implement endpoint
@@ -76,22 +104,10 @@ def create_drink():
     
     drink = Drink(title= details['title'], recipe= str_recipe)
     drink.insert()
-    '''
-    try:
-        drink = Drink(title= details['title'], 
-                      recipe= details['recipe'])
 
-        drink.insert()
-    except:
-        db.session.rollback()  
-        has_error = True 
-        abort(500)
-    finally:
-        db.session.close()
-    '''
     result = jsonify({
       "success": not has_error,
-      "drinks": drink
+      "drinks": str_recipe
     })
 
     print("POST drinks Response \n")
@@ -109,7 +125,25 @@ def create_drink():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<int:drink_id>', methods=['PATCH'])
+def update_drink(drink_id):
+    target_drink = Drink.query.get(drink_id)
 
+    if target_drink is None: 
+        abort(404)
+    
+    new_drink = request.json
+    if new_drink is None: 
+        abort(422)
+
+    target_drink.title = new_drink['title']
+    target_drink.recipe = json.dumps(new_drink['recipe'])
+    target_drink.update()
+
+    return jsonify({
+        "success": True, 
+        "drinks": target_drink.long()
+    })
 
 '''
 @TODO implement endpoint

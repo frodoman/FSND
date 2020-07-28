@@ -66,6 +66,12 @@ class Drink(db.Model):
             'recipe': json.loads(self.recipe)
         }
 
+    def view_item(self):
+        return {
+            'name': self.title,
+            color: string,
+          parts: number
+        }
     '''
     insert()
         inserts a new model into a database
