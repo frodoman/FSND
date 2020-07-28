@@ -4,7 +4,7 @@ from sqlalchemy import exc
 import json
 from flask_cors import CORS
 
-from .database.models import db_drop_and_create_all, setup_db, Drink
+from .database.models import db_drop_and_create_all, setup_db, Drink, db
 from .auth.auth import AuthError, requires_auth
 
 app = Flask(__name__)
@@ -60,8 +60,44 @@ def index():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks', methods=['POST'])
+def create_drink():
+    details = request.json
+    print("POST drinks\n")
+    print(details)
+    
+    recipe = details['recipe']
+    print("Recipe type: ", type(recipe))
+    str_recipe = json.dumps(recipe)
+    print("String recipe: ", str_recipe)
+    print("String recipe type: ", type(str_recipe))
 
+    has_error = False
+    
+    drink = Drink(title= details['title'], recipe= str_recipe)
+    drink.insert()
+    '''
+    try:
+        drink = Drink(title= details['title'], 
+                      recipe= details['recipe'])
 
+        drink.insert()
+    except:
+        db.session.rollback()  
+        has_error = True 
+        abort(500)
+    finally:
+        db.session.close()
+    '''
+    result = jsonify({
+      "success": not has_error,
+      "drinks": drink
+    })
+
+    print("POST drinks Response \n")
+    print(result)
+    
+    return result
 '''
 @TODO implement endpoint
     PATCH /drinks/<id>
