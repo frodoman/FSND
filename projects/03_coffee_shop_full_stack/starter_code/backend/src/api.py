@@ -208,6 +208,14 @@ def error_not_found(error):
       "message": "Not found!"
     }), 404
 
+@app.errorhandler(403)
+def error_unauthorized(error):
+    return jsonify({
+      "success": False,
+      "error": 403,
+      "message": "Unauthorized!"
+    }), 403
+
 @app.errorhandler(400)
 def error_bad_request(error):
     return jsonify({
