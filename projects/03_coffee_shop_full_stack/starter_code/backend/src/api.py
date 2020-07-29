@@ -91,27 +91,28 @@ def get_drinks_detail():
 @app.route('/drinks', methods=['POST'])
 def create_drink():
     details = request.json
-    print("POST drinks\n")
-    print(details)
     
-    recipe = details['recipe']
-    print("Recipe type: ", type(recipe))
-    str_recipe = json.dumps(recipe)
-    print("String recipe: ", str_recipe)
-    print("String recipe type: ", type(str_recipe))
+    key_title = 'title'
+    key_recipe = 'recipe'
 
-    has_error = False
-    
-    drink = Drink(title= details['title'], recipe= str_recipe)
-    drink.insert()
+    if not key_title in details or not key_recipe in details:
+        abort(422)
+
+    str_recipe = json.dumps(details[key_recipe])
+    success = True
+
+    try:
+        drink = Drink(title=details[key_title], recipe=str_recipe)
+        drink.insert()
+    except():
+        success = False
+    finally:
+        db.session.close()
 
     result = jsonify({
-      "success": not has_error,
+      "success": success,
       "drinks": str_recipe
     })
-
-    print("POST drinks Response \n")
-    print(result)
     
     return result
 '''
@@ -136,12 +137,18 @@ def update_drink(drink_id):
     if new_drink is None: 
         abort(422)
 
-    target_drink.title = new_drink['title']
-    target_drink.recipe = json.dumps(new_drink['recipe'])
-    target_drink.update()
+    success = True
+    try:
+        target_drink.title = new_drink['title']
+        target_drink.recipe = json.dumps(new_drink['recipe'])
+        target_drink.update()
+    except():
+        success = False
+    finally:
+        db.session.close()
 
     return jsonify({
-        "success": True, 
+        "success": success, 
         "drinks": target_drink.long()
     })
 
@@ -155,6 +162,26 @@ def update_drink(drink_id):
     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<int:drink_id>', methods=['DELETE'])
+def delete_drink(drink_id):
+    target_drink = Drink.query.get(drink_id)
+
+    if target_drink is None:
+        abort(404)
+    
+    success = True
+    try:
+        target_drink.delete()
+    except():
+        success = False
+    finally:
+        db.session.close()
+
+    return jsonify({
+        "success": success,
+        "delete": drink_id
+    })
+    
 
 
 ## Error Handling
@@ -162,7 +189,7 @@ def update_drink(drink_id):
 Example error handling for unprocessable entity
 '''
 @app.errorhandler(422)
-def unprocessable(error):
+def error_unprocessable(error):
     return jsonify({
                     "success": False, 
                     "error": 422,
@@ -170,21 +197,40 @@ def unprocessable(error):
                     }), 422
 
 '''
-@TODO implement error handlers using the @app.errorhandler(error) decorator
-    each error handler should return (with approprate messages):
-             jsonify({
-                    "success": False, 
-                    "error": 404,
-                    "message": "resource not found"
-                    }), 404
-
-'''
-
-'''
 @TODO implement error handler for 404
     error handler should conform to general task above 
 '''
+@app.errorhandler(404)
+def error_not_found(error):
+    return jsonify({
+      "success": False,
+      "error": 404,
+      "message": "Not found!"
+    }), 404
 
+@app.errorhandler(400)
+def error_bad_request(error):
+    return jsonify({
+      "success": False,
+      "error": 400,
+      "message": "Bad request!"
+    }), 400
+  
+@app.errorhandler(405)
+def error_not_allowed(error):
+    return jsonify({
+      "success": False,
+      "error": 405,
+      "message": "Method not allowed!"
+    }), 405
+
+@app.errorhandler(500)
+def error_server(error):
+    return jsonify({
+      "success": False,
+      "error": 500,
+      "message": "Internal server error."
+    }), 500
 
 '''
 @TODO implement error handler for AuthError
