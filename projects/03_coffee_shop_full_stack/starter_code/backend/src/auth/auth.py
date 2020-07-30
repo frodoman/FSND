@@ -1,9 +1,9 @@
 import json
-from flask import request, _request_ctx_stack
+from flask import request, _request_ctx_stack, abort
 from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
-
+from enum import Enum  
 
 AUTH0_DOMAIN = 'coffee-x.eu.auth0.com'
 ALGORITHMS = ['RS256']
@@ -19,7 +19,12 @@ class AuthError(Exception):
         self.error = error
         self.status_code = status_code
 
-
+class Permission:
+    GET_DRINKT_DETAILS = 'get:drinks-detail'
+    POST_DRINKS = 'post:drinks'
+    UPDATE_DRINKS = 'patch:drinks'
+    DELETE_DRINKS = 'delete:drinks'
+    
 ## Auth Header
 
 '''
@@ -48,7 +53,7 @@ def get_token_auth_header():
     elif header_parts[0].lower() != 'bearer':
         raise incorect_header
 
-   return header_parts[1]
+    return header_parts[1]  
 
 '''
 @TODO implement check_permissions(permission, payload) method
@@ -163,6 +168,9 @@ def verify_decode_jwt(token):
 '''
 def requires_auth(permission=''):
     def requires_auth_decorator(f):
+        print("Pass in f: \n")
+        print(f)
+        print("Permission: ", str(permission))
         @wraps(f)
         def wrapper(*args, **kwargs):
             try:
@@ -175,4 +183,6 @@ def requires_auth(permission=''):
             return f(payload, *args, **kwargs)
 
         return wrapper
+    print("Decorated f:\n")
+    print(requires_auth_decorator)
     return requires_auth_decorator

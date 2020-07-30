@@ -5,7 +5,7 @@ import json
 from flask_cors import CORS
 
 from .database.models import db_drop_and_create_all, setup_db, Drink, db
-from .auth.auth import AuthError, requires_auth
+from .auth.auth import AuthError, requires_auth, Permission
 
 app = Flask(__name__)
 setup_db(app)
@@ -65,9 +65,13 @@ def get_drinks():
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks-detail', methods=['GET'])
-def get_drinks_detail():
-    drinks = Drink.query.all()
+@requires_auth(Permission.GET_DRINKT_DETAILS)
+def get_drinks_detail(jwt):
 
+    print("JWT: \n")
+    print(jwt)
+
+    drinks = Drink.query.all()
     drinks_result = []
 
     if drinks is not None and len(drinks) > 0:
