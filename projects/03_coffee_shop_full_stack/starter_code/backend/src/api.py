@@ -67,16 +67,14 @@ def get_drinks():
 @app.route('/drinks-detail', methods=['GET'])
 @requires_auth(Permission.GET_DRINKT_DETAILS)
 def get_drinks_detail(jwt):
-
-    print("JWT: \n")
-    print(jwt)
-
     drinks = Drink.query.all()
-    drinks_result = []
 
-    if drinks is not None and len(drinks) > 0:
-        for drink in drinks:
-            drinks_result.append(drink.long())
+    if drinks is None or len(drinks) == 0:
+        abort(404)
+
+    drinks_result = []
+    for drink in drinks:
+        drinks_result.append(drink.long())
     
     return jsonify({
         "success": True,
@@ -93,13 +91,14 @@ def get_drinks_detail(jwt):
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks', methods=['POST'])
-def create_drink():
+@requires_auth(Permission.POST_DRINKS)
+def create_drink(jwt):
     details = request.json
     
     key_title = 'title'
     key_recipe = 'recipe'
 
-    if not key_title in details or not key_recipe in details:
+    if details is None or not key_title in details or not key_recipe in details:
         abort(422)
 
     str_recipe = json.dumps(details[key_recipe])
@@ -113,12 +112,11 @@ def create_drink():
     finally:
         db.session.close()
 
-    result = jsonify({
-      "success": success,
-      "drinks": str_recipe
-    })
-    
-    return result
+    return jsonify({
+            "success": success,
+            "drinks": str_recipe
+            })
+
 '''
 @TODO implement endpoint
     PATCH /drinks/<id>
@@ -131,20 +129,24 @@ def create_drink():
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks/<int:drink_id>', methods=['PATCH'])
-def update_drink(drink_id):
+@requires_auth(Permission.UPDATE_DRINKS)
+def update_drink(jwt, drink_id):
     target_drink = Drink.query.get(drink_id)
 
     if target_drink is None: 
         abort(404)
     
+    key_title = 'title'
+    key_recipe = 'recipe'
+
     new_drink = request.json
-    if new_drink is None: 
+    if new_drink is None or key_title not in new_drink or key_recipe not in new_drink: 
         abort(422)
 
     success = True
     try:
-        target_drink.title = new_drink['title']
-        target_drink.recipe = json.dumps(new_drink['recipe'])
+        target_drink.title = new_drink[key_title]
+        target_drink.recipe = json.dumps(new_drink[key_recipe])
         target_drink.update()
     except():
         success = False
@@ -167,7 +169,8 @@ def update_drink(drink_id):
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks/<int:drink_id>', methods=['DELETE'])
-def delete_drink(drink_id):
+@requires_auth(Permission.DELETE_DRINKS)
+def delete_drink(jwt, drink_id):
     target_drink = Drink.query.get(drink_id)
 
     if target_drink is None:

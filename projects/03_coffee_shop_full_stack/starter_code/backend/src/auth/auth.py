@@ -24,7 +24,7 @@ class Permission:
     POST_DRINKS = 'post:drinks'
     UPDATE_DRINKS = 'patch:drinks'
     DELETE_DRINKS = 'delete:drinks'
-    
+
 ## Auth Header
 
 '''
@@ -168,9 +168,6 @@ def verify_decode_jwt(token):
 '''
 def requires_auth(permission=''):
     def requires_auth_decorator(f):
-        print("Pass in f: \n")
-        print(f)
-        print("Permission: ", str(permission))
         @wraps(f)
         def wrapper(*args, **kwargs):
             try:
@@ -183,6 +180,4 @@ def requires_auth(permission=''):
             return f(payload, *args, **kwargs)
 
         return wrapper
-    print("Decorated f:\n")
-    print(requires_auth_decorator)
     return requires_auth_decorator
