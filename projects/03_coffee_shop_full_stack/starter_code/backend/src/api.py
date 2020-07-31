@@ -110,7 +110,7 @@ def create_drink(jwt):
     except():
         success = False
     finally:
-        db.session.close()
+       db.session.close()
 
     return jsonify({
             "success": success,
@@ -138,15 +138,19 @@ def update_drink(jwt, drink_id):
     
     key_title = 'title'
     key_recipe = 'recipe'
+    drink_details = target_drink.long()
 
     new_drink = request.json
-    if new_drink is None or key_title not in new_drink or key_recipe not in new_drink: 
+    if new_drink is None or (key_title not in new_drink and key_recipe not in new_drink): 
         abort(422)
 
     success = True
     try:
-        target_drink.title = new_drink[key_title]
-        target_drink.recipe = json.dumps(new_drink[key_recipe])
+        if key_title in new_drink:
+            target_drink.title = new_drink[key_title]
+        if key_recipe in new_drink:
+            target_drink.recipe = json.dumps(new_drink[key_recipe])
+
         target_drink.update()
     except():
         success = False
@@ -155,7 +159,7 @@ def update_drink(jwt, drink_id):
 
     return jsonify({
         "success": success, 
-        "drinks": target_drink.long()
+        "drinks": [drink_details]
     })
 
 '''
@@ -189,7 +193,6 @@ def delete_drink(jwt, drink_id):
         "delete": drink_id
     })
     
-
 
 ## Error Handling
 '''
