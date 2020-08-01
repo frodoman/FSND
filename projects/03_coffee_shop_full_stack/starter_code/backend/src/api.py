@@ -108,7 +108,8 @@ def create_drink(jwt):
     key_title = 'title'
     key_recipe = 'recipe'
 
-    if details is None or key_title not in details or key_recipe not in details:
+    all_params = key_title in details and key_recipe in details
+    if details is None or not all_params:
         abort(422)
 
     str_recipe = json.dumps(details[key_recipe])
@@ -155,7 +156,8 @@ def update_drink(jwt, drink_id):
     drink_details = target_drink.long()
 
     new_drink = request.json
-    if new_drink is None or (key_title not in new_drink and key_recipe not in new_drink):
+    no_params = key_title not in new_drink and key_recipe not in new_drink
+    if new_drink is None or no_params:
         abort(422)
 
     success = True
