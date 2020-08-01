@@ -69,9 +69,6 @@ def get_drinks():
 def get_drinks_detail(jwt):
     drinks = Drink.query.all()
 
-    if drinks is None or len(drinks) == 0:
-        abort(404)
-
     drinks_result = []
     for drink in drinks:
         drinks_result.append(drink.long())
